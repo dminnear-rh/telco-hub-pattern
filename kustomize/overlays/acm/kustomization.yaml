@@ -2,7 +2,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - https://github.com/openshift-kni/telco-reference/tree/main/telco-hub/configuration/reference-crs/required/acm
+  - https://github.com/openshift-kni/telco-reference//telco-hub/configuration/reference-crs/required/acm?ref=main
 
 patches:
   - patch: |-
