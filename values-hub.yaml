@@ -1,116 +1,14 @@
----
-# =============================================================================
-# Telco Hub Pattern - Hub Cluster Configuration
-# =============================================================================
-# This file defines the hub cluster configuration for the telco-hub pattern.
-# The hub cluster serves as the central management point for the entire telco
-# infrastructure, providing GitOps, cluster management, and policy enforcement.
-#
-# =============================================================================
-# HUB CLUSTER GROUP CONFIGURATION
-# =============================================================================
-
 clusterGroup:
-  # Cluster identification and role
-  name: hub                               # Name of this cluster group
-  isHubCluster: true                      # Designates this as the hub/management cluster
+  name: hub
 
-  # Namespace management - namespaces to be created/managed
-  namespaces:
-    - openshift-gitops                    # Required for ArgoCD/GitOps operations
-
-  # Operator subscriptions (managed via telco-hub components instead)
-  subscriptions: {}                       # Empty - operators managed by individual charts
-
-  # ArgoCD projects (managed via individual application charts)
-  projects: {}                           # Empty - projects created by component charts
-
-  # =============================================================================
-  # SHARED CONFIGURATION FILES
-  # =============================================================================
-  # Include environment-specific overrides and customizations
-
-  sharedValueFiles:
-    - '/overrides/values-telco-hub.yaml'  # Telco-specific configuration and customizations
-
-  # =============================================================================
-  # TELCO HUB APPLICATIONS
-  # =============================================================================
-  # ArgoCD Applications that comprise the telco-hub pattern. Each application
-  # manages a specific component or capability of the telco-hub infrastructure.
-  #
-  # Component enablement and configuration are controlled via values-telco-hub.yaml
+  subscriptions:
+    talm:
+      name: topology-aware-lifecycle-manager
 
   applications:
-
-    # -------------------------------------------------------------------------
-    # REQUIRED COMPONENTS
-    # -------------------------------------------------------------------------
-    # Core infrastructure components required for telco-hub functionality
-
-    acm:                                  # Advanced Cluster Management
+    acm:
       name: acm
-      namespace: openshift-gitops
+      namespace: default
       project: default
-      path: charts/telco-hub/required/acm
-
-    gitops:                               # GitOps Infrastructure (ArgoCD, operators)
-      name: gitops
-      namespace: openshift-gitops
-      project: default
-      path: charts/telco-hub/required/gitops
-
-    talm:                                 # Topology Aware Lifecycle Manager
-      name: talm
-      namespace: openshift-gitops
-      project: default
-      path: charts/telco-hub/required/talm
-
-    # -------------------------------------------------------------------------
-    # OPTIONAL COMPONENTS
-    # -------------------------------------------------------------------------
-    # Additional capabilities that can be enabled based on requirements
-
-    logging:                              # Cluster Logging Operator
-      name: logging
-      namespace: openshift-gitops
-      project: default
-      path: charts/telco-hub/optional/logging
-
-    lso:                                  # Local Storage Operator
-      name: lso
-      namespace: openshift-gitops
-      project: default
-      path: charts/telco-hub/optional/lso
-
-    odf:                                  # OpenShift Data Foundation
-      name: odf
-      namespace: openshift-gitops
-      project: default
-      path: charts/telco-hub/optional/odf
-
-    backup-recovery:                      # Backup and Recovery (Velero/OADP)
-      name: backup-recovery
-      namespace: openshift-gitops
-      project: default
-      path: charts/telco-hub/optional/backup-recovery
-
-# =============================================================================
-# CONFIGURATION REFERENCE
-# =============================================================================
-# To customize this configuration:
-#
-# 1. Component enablement is controlled in overrides/values-telco-hub.yaml
-# 2. All applications use 'default' as the ArgoCD project for consistency
-# 3. All applications deploy to 'openshift-gitops' namespace for ArgoCD management
-# 4. Required components provide core telco-hub functionality
-# 5. Optional components can be enabled/disabled based on use case requirements
-#
-# Application organization:
-# - Required components: Essential for basic telco-hub operation
-# - Optional components: Add capabilities like storage, logging, backup
-#
-# Each application points to its respective Helm chart, which handles:
-# - Component deployment via ArgoCD Applications
-# - Environment-specific customization via kustomize patches
-# - Integration with telco-reference repository configurations
+      kustomize: true
+      path: kustomize/overlays/acm

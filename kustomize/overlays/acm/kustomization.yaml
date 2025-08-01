@@ -1,0 +1,79 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - https://github.com/openshift-kni/telco-reference/tree/main/telco-hub/configuration/reference-crs/required/acm
+
+patches:
+  - patch: |-
+      - op: replace
+        path: "/spec/source"
+        value: "redhat-operators"
+    target:
+      group: operators.coreos.com
+      version: v1alpha1
+      kind: Subscription
+      name: open-cluster-management-subscription
+  - patch: |-
+      - op: add
+        path: "/spec/upgradeStrategy"
+        value: "Default"
+    target:
+      group: operators.coreos.com
+      version: v1
+      kind: OperatorGroup
+      name: open-cluster-management-group
+  - patch: |-
+      - op: replace
+        path: "/spec/overrides/components"
+        value:
+        - configOverrides: {}
+          enabled: true
+          name: local-cluster
+        - configOverrides: {}
+          enabled: true
+          name: assisted-service
+        - configOverrides: {}
+          enabled: true
+          name: cluster-lifecycle
+        - configOverrides: {}
+          enabled: true
+          name: cluster-manager
+        - configOverrides: {}
+          enabled: true
+          name: discovery
+        - configOverrides: {}
+          enabled: true
+          name: hive
+        - configOverrides: {}
+          enabled: true
+          name: server-foundation
+        - configOverrides: {}
+          enabled: true
+          name: cluster-proxy-addon
+        - configOverrides: {}
+          enabled: true
+          name: hypershift-local-hosting
+        - configOverrides: {}
+          enabled: true
+          name: console-mce
+        - configOverrides: {}
+          enabled: true
+          name: hypershift
+        - configOverrides: {}
+          enabled: false
+          name: managedserviceaccount
+        - configOverrides: {}
+          enabled: false
+          name: image-based-install-operator
+        - configOverrides: {}
+          enabled: false
+          name: cluster-api-preview
+        - configOverrides: {}
+          enabled: false
+          name: cluster-api-provider-aws-preview
+    target:
+      group: multicluster.openshift.io
+      version: v1
+      kind: MultiClusterEngine
+      name: multiclusterengine
