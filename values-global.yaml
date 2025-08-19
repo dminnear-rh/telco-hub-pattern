@@ -30,7 +30,7 @@ main:
   # Multi-source Helm chart configuration
   multiSourceConfig:
     enabled: true                                   # Enable multi-source configuration for complex charts
-    clusterGroupGitRepoUrl: https://github.com/dminnear-rh/clustergroup-chart/tree/update-argo-values-for-telco
+    clusterGroupGitRepoUrl: https://github.com/dminnear-rh/clustergroup-chart
     clusterGroupChartGitRevision: update-argo-values-for-telco
 
   gitops:
