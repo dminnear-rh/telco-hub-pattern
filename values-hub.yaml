@@ -37,3 +37,57 @@ clusterGroup:
       syncPolicy:
         automated:
           prune: true                          # Remove resources not in Git
+
+  argoCD:
+    controller:
+      resources:
+        limits:
+          cpu: "16"
+          memory: 32Gi
+        requests:
+          cpu: "1"
+          memory: 2Gi
+    kustomizeBuildOptions: "--enable-alpha-plugins"
+    repo:
+      resources:
+        limits:
+          cpu: "8"
+          memory: "16Gi"
+        requests:
+          cpu: "1"
+          memory: "2Gi"
+      extraVolumes:
+        - name: "kustomize"
+          emptyDir: {}
+      extraInitContainers:
+        - name: "kustomize-plugin"
+          command:
+            - "/exportkustomize.sh"
+          args:
+            - "/.config"
+          imagePullPolicy: "Always"
+          volumeMounts:
+            - name: "kustomize"
+              mountPath: "/.config"
+          terminationMessagePolicy: "File"
+          terminationMessagePath: "/dev/termination-log"
+          image: "registry.redhat.io/openshift4/ztp-site-generate-rhel8:v4.19"
+        - name: "policy-generator-install"
+          image: "registry.redhat.io/rhacm2/multicluster-operators-subscription-rhel9:v2.13"
+          imagePullPolicy: "Always"
+          volumeMounts:
+            - name: "kustomize"
+              mountPath: "/.config"
+          args:
+            - "-c"
+            - "mkdir -p /.config/kustomize/plugin/policy.open-cluster-management.io/v1/policygenerator && cp /policy-generator/PolicyGenerator-not-fips-compliant /.config/kustomize/plugin/policy.open-cluster-management.io/v1/policygenerator/PolicyGenerator"
+          command:
+            - "/bin/bash"
+      extraVolumeMounts:
+        - name: "kustomize"
+          mountPath: "/.config"
+      env:
+        - name: "ARGOCD_EXEC_TIMEOUT"
+          value: "360s"
+        - name: "KUSTOMIZE_PLUGIN_HOME"
+          value: "/.config/kustomize/plugin"

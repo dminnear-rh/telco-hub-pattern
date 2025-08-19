@@ -30,7 +30,8 @@ main:
   # Multi-source Helm chart configuration
   multiSourceConfig:
     enabled: true                                   # Enable multi-source configuration for complex charts
-    clusterGroupChartVersion: "0.9.*"               # Version constraint for clusterGroup charts
+    clusterGroupGitRepoUrl: https://github.com/dminnear-rh/clustergroup-chart/tree/update-argo-values-for-telco
+    clusterGroupChartGitRevision: update-argo-values-for-telco
 
   gitops:
     channel: "gitops-1.16"                          # OpenShift GitOps operator channel version
